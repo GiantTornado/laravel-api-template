@@ -19,9 +19,8 @@ class BookResource extends JsonResource
         return [
             'id' => $this->id,
             'title' => $this->title,
-            //add [attribute] to resource only if it is [present]
             'description' => $this->whenHas('description'),
-            //load relationship into the response if it exist in modelObject
+            'publishedAt' => $this->whenHas('published_at'),
             'category' => new CategoryResource($this->whenLoaded('category')),
             'authors' => new AuthorCollection($this->whenLoaded('authors'))
         ];

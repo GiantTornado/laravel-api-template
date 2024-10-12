@@ -24,23 +24,33 @@ class BookService
             'params' => $filters
         ]);
 
-        $books = $filteredBooks->when($pageSize, fn ($query) => $query->paginate($pageSize), fn ($query) => $query->get());
+        $books = $filteredBooks->when($pageSize, fn($query) => $query->paginate($pageSize), fn($query) => $query->get());
 
         return $books;
     }
 
-    public function createFromRequest($request)
+    public function getBook($id)
     {
-        if (Gate::inspect('create', Book::class)) {
-            throw new \Exception('Not Authorized.', 403);
+        $book = Book::find($id);
+        if (!$book) {
+            throw new \Exception('Book Not Found.', 404);
         }
 
+        return $book;
+    }
+
+    public function createFromRequest($request)
+    {
+        if (Gate::denies('create', Book::class)) {
+            throw new \Exception('Not Authorized.', 403);
+        }
         $book = null;
 
         DB::transaction(function () use ($request, &$book) {
             $book = Book::create([
                 'title' => $request->title,
                 'description' => $request->description,
+                'published_at' => $request->publishedAt,
                 'category_id' => $request->categoryId,
             ]);
 
@@ -71,6 +81,7 @@ class BookService
             $book->update([
                 'title' => $request->title,
                 'description' => $request->description,
+                'published_at' => $request->publishedAt,
                 'category_id' => $request->categoryId,
             ]);
 

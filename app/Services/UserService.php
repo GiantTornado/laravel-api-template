@@ -6,11 +6,20 @@ use App\Models\User;
 
 class UserService
 {
-    public function getUser($id = null, $email = null)
+    public function getUser($id)
+    {
+        $user = User::find($id);
+        if (!$user) {
+            throw new \Exception('User Not Found.', 404);
+        }
+
+        return $user;
+    }
+
+    public function getUserByEmail($email = null)
     {
         $user = User::with(['profile', 'role'])
-            ->when($id, fn ($query) => $query->where('id', $id))
-            ->when($email, fn ($query) => $query->where('email', $email))
+            ->where('email', $email)
             ->first();
 
         return $user;

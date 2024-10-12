@@ -13,7 +13,7 @@ class AuthController extends Controller
 {
     public function show(UserService $userService)
     {
-        $user = $userService->getUser(id: auth()->id());
+        $user = $userService->getUser(auth()->id());
 
         return $this->responseOk(new UserResource($user));
     }
@@ -22,7 +22,7 @@ class AuthController extends Controller
     {
         try {
             $user = $authService->getUserByCredentialsOrFail(
-                $storeAuthRequest->username,
+                $storeAuthRequest->email,
                 $storeAuthRequest->password
             );
 

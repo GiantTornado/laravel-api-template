@@ -25,6 +25,7 @@ class StoreBookRequest extends FormRequest
         return [
             'title' => ['required', 'string', 'max:255', 'unique:books,title', new NoDigitsRule],
             'description' => ['string', 'max:1000'],
+            'publishedAt' => ['date', 'before_or_equal:' . now()->subDay()->toDateString()],
             'categoryId' => ['required', 'integer', 'exists:categories,id'],
             'authorIds' => ['array'],
             'authorIds.*' => ['integer', 'exists:authors,id']

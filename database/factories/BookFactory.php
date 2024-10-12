@@ -19,6 +19,7 @@ class BookFactory extends Factory
         return [
             'title' => fake()->unique()->words(nb: 3, asText: true),
             'description' => fake()->realText(maxNbChars: 200),
+            'published_at' => fake()->dateTimeBetween('-1 years', '+1 months'),
         ];
     }
 }

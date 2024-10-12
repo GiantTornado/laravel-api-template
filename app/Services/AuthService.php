@@ -8,7 +8,7 @@ class AuthService
 {
     public function getUserByCredentialsOrFail($email, $password)
     {
-        $user = (new UserService)->getUser(email: $email);
+        $user = (new UserService)->getUserByEmail($email);
 
         if (!$user || !Hash::check($password, $user->password)) {
             throw new \Exception("Invalid credentials", 422);

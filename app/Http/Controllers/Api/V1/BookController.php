@@ -21,6 +21,17 @@ class BookController extends Controller
         return new BookCollection($books);
     }
 
+    public function show(BookService $bookService, $id)
+    {
+        try {
+            $book = $bookService->getBook($id);
+        } catch (\Exception $e) {
+            abort($e->getCode(), $e->getMessage());
+        }
+
+        return new BookResource($book);
+    }
+
     public function store(StoreBookRequest $storeBookRequest, BookService $bookService)
     {
         try {

@@ -10,7 +10,8 @@ class CategoryId implements PipeLineInterface
     public function handle(array $content, Closure $next)
     {
         if (isset($content['params']['categoryIds'])) {
-            $content['queryBuilder']->whereIn('books.category_id', $content['params']['categoryIds']);
+            $tableName = $content['queryBuilder']->getModel()->getTable();
+            $content['queryBuilder']->whereIn("$tableName.category_id", $content['params']['categoryIds']);
         }
 
         return $next($content);

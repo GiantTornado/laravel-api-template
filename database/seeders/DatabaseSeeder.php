@@ -26,7 +26,7 @@ class DatabaseSeeder extends Seeder
 
         if (app()->environment(['local', 'staging'])) {
             //HasOne Relationship
-            User::factory()->admin()->has(Profile::factory())->count(1)->create();
+            User::factory()->viewer()->has(Profile::factory())->count(1)->create();
 
             $author_1 = Author::factory()->create();
             $author_2 = Author::factory()->create();

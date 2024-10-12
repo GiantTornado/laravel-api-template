@@ -12,6 +12,7 @@ class BookFilters extends BaseFilters
     {
         $this->filters = $filters ?? [
             CategoryId::class,
+            PublishedAt::class,
             BookSearchBy::class,
         ];
     }
