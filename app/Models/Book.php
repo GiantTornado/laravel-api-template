@@ -10,7 +10,7 @@ class Book extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $fillable = ['title', 'description', 'published_at', 'category_id'];
+    protected $fillable = ['title', 'slug', 'description', 'published_at', 'category_id'];
 
     public function scopeNewlyCreated($query, $from_date)
     {

@@ -16,8 +16,11 @@ class BookFactory extends Factory
      */
     public function definition(): array
     {
+        $title = fake()->unique()->words(nb: 3, asText: true);
+
         return [
-            'title' => fake()->unique()->words(nb: 3, asText: true),
+            'title' => $title,
+            'slug' => str()->slug($title, '-'),
             'description' => fake()->realText(maxNbChars: 200),
             'published_at' => fake()->dateTimeBetween('-1 years', '+1 months'),
         ];

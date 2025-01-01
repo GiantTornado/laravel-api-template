@@ -45,10 +45,10 @@ class BookService
             throw new \Exception('Not Authorized.', 403);
         }
         $book = null;
-
         DB::transaction(function () use ($request, &$book) {
             $book = Book::create([
                 'title' => $request->title,
+                'slug' => str()->slug($request->title, '-'),
                 'description' => $request->description,
                 'published_at' => $request->publishedAt,
                 'category_id' => $request->categoryId,
@@ -80,6 +80,7 @@ class BookService
         DB::transaction(function () use ($request, $book) {
             $book->update([
                 'title' => $request->title,
+                'slug' => str()->slug($request->title, '-'),
                 'description' => $request->description,
                 'published_at' => $request->publishedAt,
                 'category_id' => $request->categoryId,
