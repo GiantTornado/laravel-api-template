@@ -14,10 +14,11 @@ return new class extends Migration
         Schema::create('author_book', function (Blueprint $table) {
             $table->id();
             $table->boolean('is_autographed')->default(false);
-            $table->timestamps();
 
             $table->foreignId("author_id")->constrained("authors", "id");
             $table->foreignId("book_id")->constrained("books", "id");
+
+            $table->timestamps();
         });
     }
 

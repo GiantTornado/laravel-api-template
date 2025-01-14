@@ -17,10 +17,11 @@ return new class extends Migration
             $table->string('slug')->unique();
             $table->text('description')->nullable();
             $table->date('published_at')->nullable();
+            
+            $table->foreignId("category_id")->constrained("categories", "id");
+            
             $table->timestamps();
             $table->softDeletes();
-
-            $table->foreignId("category_id")->constrained("categories", "id");
         });
     }
 
