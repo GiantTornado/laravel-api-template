@@ -10,7 +10,7 @@ Route::controller(AuthController::class)
     ->prefix('auth')
     ->name('auth.')
     ->group(function () {
-        Route::get('/', 'show')->name('show');
+        Route::get('/', 'show')->name('show')->middleware('auth:sanctum');
         Route::post('/', 'store')->name('store');
         Route::delete('/', 'destroy')->name('destroy')->middleware('auth:sanctum');
     });
@@ -32,4 +32,8 @@ Route::controller(CategoryController::class)
     ->name("categories.")
     ->group(function () {
         Route::get("/", "index")->name("index");
+        Route::get("/{id}", "show")->name("show");
+        Route::post("/", "store")->name("store")->middleware(["auth:sanctum"]);
+        Route::put("/{id}", "update")->name("update")->middleware(["auth:sanctum"]);
+        Route::delete("/{id}", "destroy")->name("destroy")->middleware(["auth:sanctum"]);
     });
