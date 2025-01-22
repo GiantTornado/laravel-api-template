@@ -2,24 +2,21 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Actions\CreateAuthTokenAction;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\StoreAuthRequest;
+use App\Http\Resources\User\UserResource;
 use App\Services\AuthService;
 use App\Services\UserService;
-use App\Actions\CreateAuthTokenAction;
-use App\Http\Resources\User\UserResource;
 
-class AuthController extends Controller
-{
-    public function show(UserService $userService)
-    {
+class AuthController extends Controller {
+    public function show(UserService $userService) {
         $user = $userService->getUser(auth()->id());
 
         return $this->responseOk(new UserResource($user));
     }
 
-    public function store(StoreAuthRequest $storeAuthRequest, AuthService $authService)
-    {
+    public function store(StoreAuthRequest $storeAuthRequest, AuthService $authService) {
         try {
             $user = $authService->getUserByCredentialsOrFail(
                 $storeAuthRequest->email,
@@ -30,18 +27,17 @@ class AuthController extends Controller
 
         } catch (\Exception $e) {
             return response()->json([
-                'message' => $e->getMessage()
+                'message' => $e->getMessage(),
             ], 422);
         }
 
         return $this->responseCreated([
             'user' => new UserResource($user),
-            'token' => $token
+            'accessToken' => $token,
         ]);
     }
 
-    public function destroy()
-    {
+    public function destroy() {
         auth()->user()->currentAccessToken()->delete();
 
         return $this->responseDeleted();

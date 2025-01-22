@@ -2,6 +2,8 @@
 
 return [
     'pagination' => [
-        'page_size' => 10
-    ]
+        'page_size' => [
+            'books' => 10,
+        ],
+    ],
 ];

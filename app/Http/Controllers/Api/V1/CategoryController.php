@@ -9,28 +9,20 @@ use App\Http\Resources\Category\CategoryCollection;
 use App\Http\Resources\Category\CategoryResource;
 use App\Services\CategoryService;
 
-class CategoryController extends Controller
-{
-    public function index(CategoryService $categoryService)
-    {
+class CategoryController extends Controller {
+    public function index(CategoryService $categoryService) {
         $categories = $categoryService->getCategories();
 
         return new CategoryCollection($categories);
     }
 
-    public function show(CategoryService $categoryService, $id)
-    {
-        try {
-            $category = $categoryService->getCategory($id);
-        } catch (\Exception $e) {
-            abort($e->getCode(), $e->getMessage());
-        }
+    public function show(CategoryService $categoryService, $id) {
+        $category = $categoryService->getCategory($id);
 
         return new CategoryResource($category);
     }
 
-    public function store(StoreCategoryRequest $storeCategoryRequest, CategoryService $categoryService)
-    {
+    public function store(StoreCategoryRequest $storeCategoryRequest, CategoryService $categoryService) {
         try {
             $category = $categoryService->createFromRequest($storeCategoryRequest);
         } catch (\Exception $e) {
@@ -40,8 +32,7 @@ class CategoryController extends Controller
         return $this->responseCreated(new CategoryResource($category));
     }
 
-    public function update(UpdateCategoryRequest $updateCategoryRequest, CategoryService $categoryService, $id)
-    {
+    public function update(UpdateCategoryRequest $updateCategoryRequest, CategoryService $categoryService, $id) {
         try {
             $category = $categoryService->updateFromRequest($updateCategoryRequest, $id);
         } catch (\Exception $e) {
@@ -51,8 +42,7 @@ class CategoryController extends Controller
         return $this->responseOk(new CategoryResource($category));
     }
 
-    public function destroy(CategoryService $categoryService, $id)
-    {
+    public function destroy(CategoryService $categoryService, $id) {
         try {
             $categoryService->delete($id);
         } catch (\Exception $e) {

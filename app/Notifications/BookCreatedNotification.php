@@ -8,15 +8,13 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class BookCreatedNotification extends Notification implements ShouldQueue
-{
+class BookCreatedNotification extends Notification implements ShouldQueue {
     use Queueable;
 
     /**
      * Create a new notification instance.
      */
-    public function __construct(private Book $book)
-    {
+    public function __construct(private Book $book) {
         //
     }
 
@@ -25,22 +23,20 @@ class BookCreatedNotification extends Notification implements ShouldQueue
      *
      * @return array<int, string>
      */
-    public function via(object $notifiable): array
-    {
+    public function via(object $notifiable): array {
         return ['mail'];
     }
 
     /**
      * Get the mail representation of the notification.
      */
-    public function toMail(object $notifiable): MailMessage
-    {
-        //uses [APP_NAME] inside the header and footer of the email
+    public function toMail(object $notifiable): MailMessage {
+        // uses [APP_NAME] inside the header and footer of the email
         return (new MailMessage)
             ->subject('New Book Added')
             ->greeting('Dear User,')
             ->line("You have created {$this->book->title} book.")
-            ->lineIf($this->book->description, "{$this->book->description}");
+            ->lineIf(!empty($this->book->description), "{$this->book->description}");
     }
 
     /**
@@ -48,8 +44,7 @@ class BookCreatedNotification extends Notification implements ShouldQueue
      *
      * @return array<string, mixed>
      */
-    public function toArray(object $notifiable): array
-    {
+    public function toArray(object $notifiable): array {
         return [
             //
         ];

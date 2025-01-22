@@ -2,75 +2,75 @@
 
 namespace App\Services;
 
-use Illuminate\Support\Facades\DB;
+use App\Exceptions\Book\BookNotFoundException;
+use App\Exceptions\Book\DailyBookPublishLimitExceededException;
 use App\Filters\Book\BookFilters;
 use App\Models\Book;
 use App\Notifications\BookCreatedNotification;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Notification;
 
-class BookService
-{
-    public function getBooks($filters, $pageSize = null)
-    {
+class BookService {
+    public function getBooks($filters, $pageSize = null) {
         $queryBuilder = Book::with(['category', 'authors'])
             ->select('*')
-            //apply [local scope]
+            // apply [local scope]
             ->newlyCreated(Carbon::now()->subYear());
 
         $filteredBooks = app(BookFilters::class)->filter([
             'queryBuilder' => $queryBuilder,
-            'params' => $filters
+            'params' => $filters,
         ]);
 
-        $books = $filteredBooks->when($pageSize, fn($query) => $query->paginate($pageSize), fn($query) => $query->get());
+        $books = $filteredBooks->when($pageSize, fn ($query) => $query->paginate($pageSize), fn ($query) => $query->get());
 
         return $books;
     }
 
-    public function getBook($id)
-    {
-        $book = Book::find($id);
+    public function getBook($id) {
+        $book = Book::with(['category'])->find($id);
         if (!$book) {
-            throw new \Exception('Book Not Found.', 404);
+            throw new BookNotFoundException;
         }
 
         return $book;
     }
 
-    public function createFromRequest($request)
-    {
+    public function createFromRequest($request) {
         if (Gate::denies('create', Book::class)) {
             throw new \Exception('Not Authorized.', 403);
         }
-        $book = null;
-        DB::transaction(function () use ($request, &$book) {
+
+        $booksPublishedTodayCount = $this->getBooksPublishedTodayCount();
+        if ($booksPublishedTodayCount > config('modules.book.max_books_allowed_to_publish_per_day')) {
+            throw new DailyBookPublishLimitExceededException;
+        }
+
+        $book = DB::transaction(function () use ($request, &$book) {
             $book = Book::create([
                 'title' => $request->title,
-                'slug' => str()->slug($request->title, '-'),
                 'description' => $request->description,
                 'published_at' => $request->publishedAt,
+                'price' => $request->price,
                 'category_id' => $request->categoryId,
             ]);
 
             $book->authors()->attach($request->authorIds);
+
+            return $book;
         });
 
-        if (is_null($book)) {
-            throw new \Exception('Failed to create the book.');
-        }
-
-        //re-retreive [model] from the database with all its relations and update [modelObject] with it
+        // re-retreive [model] from the database with all its relations and update [modelObject] with it
         return $book->refresh()->load(['category', 'authors']);
     }
 
-    public function updateFromRequest($request, $id)
-    {
+    public function updateFromRequest($request, $id) {
         $book = Book::find($id);
 
         if (!$book) {
-            throw new \Exception('Book not found.', 422);
+            throw new BookNotFoundException;
         }
 
         if (Gate::inspect('update', [$book])->denied()) {
@@ -80,9 +80,9 @@ class BookService
         DB::transaction(function () use ($request, $book) {
             $book->update([
                 'title' => $request->title,
-                'slug' => str()->slug($request->title, '-'),
                 'description' => $request->description,
                 'published_at' => $request->publishedAt,
+                'price' => $request->price,
                 'category_id' => $request->categoryId,
             ]);
 
@@ -92,12 +92,11 @@ class BookService
         return $book->refresh()->load(['category', 'authors']);
     }
 
-    public function delete($id)
-    {
+    public function delete($id) {
         $book = Book::find($id);
 
         if (!$book) {
-            throw new \Exception('Book not found.', 422);
+            throw new BookNotFoundException;
         }
 
         if (Gate::inspect('delete', [$book])->denied()) {
@@ -110,8 +109,11 @@ class BookService
         });
     }
 
-    public function sendBookCreatedNotification($book, $recepients)
-    {
+    public function sendBookCreatedNotification($book, $recepients) {
         Notification::send($recepients, new BookCreatedNotification($book));
+    }
+
+    public function getBooksPublishedTodayCount(): int {
+        return Book::whereDate('published_at', now()->toDateString())->count();
     }
 }

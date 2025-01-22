@@ -7,21 +7,19 @@ use App\Http\Resources\Role\RoleResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class UserResource extends JsonResource
-{
+class UserResource extends JsonResource {
     /**
      * Transform the resource into an array.
      *
      * @return array<string, mixed>
      */
-    public function toArray(Request $request): array
-    {
+    public function toArray(Request $request): array {
         return [
             'id' => $this->id,
             'email' => $this->email,
-            //load relationship into the response if it exist in modelObject
+            // load relationship into the response if it exist in modelObject
             'profile' => new ProfileResource($this->whenLoaded('profile')),
-            'role' => new RoleResource($this->whenLoaded('role'))
+            'role' => new RoleResource($this->whenLoaded('role')),
         ];
     }
 }
