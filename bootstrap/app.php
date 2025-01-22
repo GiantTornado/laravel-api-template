@@ -7,9 +7,9 @@ use Illuminate\Support\Facades\Route;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
-        web: __DIR__ . '/../routes/web.php',
-        api: __DIR__ . '/../routes/api_v1.php',
-        commands: __DIR__ . '/../routes/console.php',
+        web: __DIR__.'/../routes/web.php',
+        api: __DIR__.'/../routes/api_v1.php',
+        commands: __DIR__.'/../routes/console.php',
         health: '/up',
         apiPrefix: 'api/v1',
         then: function () {
@@ -22,5 +22,10 @@ return Application::configure(basePath: dirname(__DIR__))
         //
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        //
+        $exceptions->render(function (\RedisException $e) {
+            return response()->json([
+                'error' => 'Redis connection error',
+                'message' => 'We are currently experiencing technical difficulties. Please try again later.',
+            ], 500);
+        });
     })->create();
