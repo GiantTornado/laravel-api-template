@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\Requests\Auth;
+namespace App\Http\Requests\Book;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rules\Password;
+use Illuminate\Validation\Rule;
 
-class StoreAuthRequest extends FormRequest {
+class GetBookRequest extends FormRequest {
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -20,9 +20,15 @@ class StoreAuthRequest extends FormRequest {
      */
     public function rules(): array {
         return [
-            'email' => ['required', 'email'],
-            // Password default rules are defined in [AppServiceProvider]
-            'password' => ['required', Password::defaults()],
+            'sortBy' => Rule::in(['price']),
+            'sortOrder' => Rule::in(['asc', 'desc']),
+        ];
+    }
+
+    public function messages(): array {
+        return [
+            'sortBy' => "The 'sortBy' parameter accepts only 'price' value.",
+            'sortOrder' => "The 'sortOrder' parameter accepts only 'asc' or 'desc' value.",
         ];
     }
 }

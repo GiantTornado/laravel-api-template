@@ -6,13 +6,11 @@ use App\Rules\NoDigitsRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class UpdateBookRequest extends FormRequest
-{
+class UpdateBookRequest extends FormRequest {
     /**
      * Determine if the user is authorized to make this request.
      */
-    public function authorize(): bool
-    {
+    public function authorize(): bool {
         return true;
     }
 
@@ -21,15 +19,15 @@ class UpdateBookRequest extends FormRequest
      *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
-    public function rules(): array
-    {
+    public function rules(): array {
         return [
             'title' => ['required', 'string', 'max:255', Rule::unique('books', 'title')->ignore($this->id, 'id'), new NoDigitsRule],
             'description' => ['string', 'max:1000'],
-            'publishedAt' => ['date', 'before_or_equal:' . now()->subDay()->toDateString()],
-            'categoryId' => ['required', 'integer', 'exists:categories,id'],
+            'publishedAt' => ['date', 'before_or_equal:'.now()->toDateString()],
+            'price' => ['required', 'integer', 'min:0'],
+            'categoryId' => ['required', 'string', 'exists:categories,id'],
             'authorIds' => ['array'],
-            'authorIds.*' => ['integer', 'exists:authors,id']
+            'authorIds.*' => ['integer', 'exists:authors,id'],
         ];
     }
 }
