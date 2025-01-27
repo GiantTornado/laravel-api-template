@@ -2,6 +2,8 @@
 
 namespace Database\Factories;
 
+use App\Models\Author;
+use App\Models\Book;
 use App\Models\Category;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -23,7 +25,16 @@ class BookFactory extends Factory {
             'description' => fake()->realText(maxNbChars: 200),
             'published_at' => fake()->dateTimeBetween('-1 years', '+1 months'),
             'price' => fake()->numberBetween(10, 1000),
+
             'category_id' => Category::factory()
         ];
+    }
+
+    //[many-to-many] seeding
+    public function withAuthor(): static {
+        return $this->state([])
+            ->afterCreating(function (Book $book) {
+                $book->authors()->attach(Author::factory()->create());
+            });
     }
 }

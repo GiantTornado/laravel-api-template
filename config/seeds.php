@@ -11,7 +11,7 @@ return [
                 'first_name' => 'Jack',
                 'last_name' => 'Rose',
             ],
-            'role_id' => RolesEnum::ADMIN,
+            'role_id' => RolesEnum::Admin
         ],
     ],
 ];

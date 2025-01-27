@@ -60,7 +60,7 @@ class CreateUserCommand extends Command {
             $user = $userRepository->create([
                 'email' => $data['email'],
                 'password' => $data['password'],
-                'role_id' => RolesEnum::ADMIN->value,
+                'role_id' => RolesEnum::Admin->value,
             ]);
 
             $profileRepository->create([

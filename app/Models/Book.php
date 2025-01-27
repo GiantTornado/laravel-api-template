@@ -13,7 +13,18 @@ class Book extends Model {
 
     protected $table = 'books';
 
+    protected $primaryKey = 'id';
+
+    //automatically fill [created_at] & [updated_at]
+    public $timestamps = true;
+
     protected $fillable = ['title', 'slug', 'description', 'published_at', 'price', 'category_id'];
+
+    protected function casts(): array {
+        return [
+            'published_at' => 'datetime'
+        ];
+    }
 
     public function sluggable(): array {      // auto generate slug on model creating [composer require cviebrock/eloquent-sluggable]
         return [

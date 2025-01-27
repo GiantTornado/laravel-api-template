@@ -1,0 +1,75 @@
+
+- Cors:
+    * Publish config [php artisan config:publish cors]
+
+===================================================================================================
+- Cron Job:
+    * Register schedulers commands in [console.php]
+    * Create task using [Task Scheduler -> Create Task] in Windows
+    * Create [Trigger] + [Repeat task every -> 1 minute] + [for a duration of indefinitely]
+    * Create [Action -> Start a program] + [Program/script -> php] + [Add arguments -> artisan schedule:run] + [Start in -> website path]
+
+===================================================================================================
+- DB Backup:
+    * Install package [composer require spatie/laravel-backup]
+    * Publish config [php artisan vendor:publish --provider="Spatie\Backup\BackupServiceProvider"]
+    * Add [backup:run] and [backup:clean] commands to [console.php]
+    * Set cron job to run [php artisan schedule:run] every minute
+
+    -----------------------------------------------------------------------------------------------
+    -- For Storing in S3:
+    * Install package [composer require league/flysystem-aws-s3-v3:^3.0]
+    * Add [s3] to [disks] array inside [backup.php]
+    * Add to [.env] the keys [AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY] with values from [AWS -> IAM -> Users -> Create User -> Create Access Key]
+    * Add to [.env] the keys [AWS_DEFAULT_REGION, AWS_BUCKET] with values from [AWS -> S3 -> Create Bucket]
+    * Add to [.env] the key [AWS_USE_PATH_STYLE_ENDPOINT] = false
+
+    -----------------------------------------------------------------------------------------------
+    * [php artisan backup:run] will create backup at [storage/app/${APP_NAME}]
+
+===================================================================================================
+- Excel:
+    * Install package [composer require "maatwebsite/excel:^3.1"]
+    * Create [BookExport.php]
+    * Create [ExcelExportController.php]
+
+===================================================================================================
+- Image Upload to S3:
+    * Install package [composer require league/flysystem-aws-s3-v3:^3.0]
+    * Add to [.env] the keys [AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY] with values from [AWS -> IAM -> Users -> Create User -> Create Access Key]
+    * Add to [.env] the keys [AWS_DEFAULT_REGION, AWS_BUCKET] with values from [AWS -> S3 -> Create Bucket]
+    * Add to [.env] the key [AWS_USE_PATH_STYLE_ENDPOINT] = false
+    * Enable public access from [AWS Bucket -> Block all public access -> off]
+    * Add to Bucket policy:
+        {"Version": "2012-10-17", "Statement": [ { "Effect": "Allow", "Principal": "*", "Action": "s3:GetObject", "Resource": "arn:aws:s3:::testuploadingimagestos3/*" } ] }
+    * Upload images using [ImageUploadController.php -> storeS3()]
+
+===================================================================================================
+- Socialite:
+    * Insall package [composer require laravel/socialite]
+    * Create SocialAccount model + migration + modify on migrations [user - profile]
+    * Add [socialite] field to [auth.php]
+    * Add [credentials] for socialite [drivers] in [services.php]
+    * Create google cloud [project] from [https://console.cloud.google.com/projectcreate]
+    * Add google cloud application auth consent from [https://console.cloud.google.com/auth/overview/create]
+    * Create google cloud credentials oAuth client ID from [https://console.cloud.google.com/apis/credentials]
+    * Add [credentials] for socialite [drivers] in [.env]
+    * Copy [Client ID] + [Client Secret] from google cloud to [.env]
+    * Create [SocialLoginController.php]
+    * Create [SocialLoginController] routes in [api_v1.php]
+    * When deploying to production publish app from [https://console.cloud.google.com/apis/credentials/consent]
+
+===================================================================================================
+- Spatie:
+    * Insall package [composer require spatie/laravel-permission]
+    * Add [use HasRoles] trait to [User.php]
+
+    -----------------------------------------------------------------------------------------------
+    * Assign role: $user->assignRole('User')
+    * Check role: $user->hasRole('Administrator'); | $user->hasAnyRole(['Administrator', 'Manager'])
+
+===================================================================================================
+- Stubs:
+    * Publish config [php artisan stub:publish]
+
+===================================================================================================

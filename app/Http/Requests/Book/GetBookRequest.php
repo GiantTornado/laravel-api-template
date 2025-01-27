@@ -20,15 +20,15 @@ class GetBookRequest extends FormRequest {
      */
     public function rules(): array {
         return [
-            'sortBy' => Rule::in(['price']),
-            'sortOrder' => Rule::in(['asc', 'desc']),
+            'sort_by' => Rule::in(['price']),
+            'sort_order' => Rule::in(['asc', 'desc']),
         ];
     }
 
     public function messages(): array {
         return [
-            'sortBy' => "The 'sortBy' parameter accepts only 'price' value.",
-            'sortOrder' => "The 'sortOrder' parameter accepts only 'asc' or 'desc' value.",
+            'sort_by' => "The 'sortBy' parameter accepts only 'price' value.",
+            'sort_order' => "The 'sortOrder' parameter accepts only 'asc' or 'desc' value.",
         ];
     }
 }

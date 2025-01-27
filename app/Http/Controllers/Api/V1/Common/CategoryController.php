@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Api\V1;
+namespace App\Http\Controllers\Api\V1\Common;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Category\StoreCategoryRequest;
@@ -23,31 +23,19 @@ class CategoryController extends Controller {
     }
 
     public function store(StoreCategoryRequest $storeCategoryRequest, CategoryService $categoryService) {
-        try {
-            $category = $categoryService->createFromRequest($storeCategoryRequest);
-        } catch (\Exception $e) {
-            abort($e->getCode(), $e->getMessage());
-        }
+        $category = $categoryService->createFromRequest($storeCategoryRequest);
 
         return $this->responseCreated(new CategoryResource($category));
     }
 
     public function update(UpdateCategoryRequest $updateCategoryRequest, CategoryService $categoryService, $id) {
-        try {
-            $category = $categoryService->updateFromRequest($updateCategoryRequest, $id);
-        } catch (\Exception $e) {
-            abort($e->getCode(), $e->getMessage());
-        }
+        $category = $categoryService->updateFromRequest($updateCategoryRequest, $id);
 
         return $this->responseOk(new CategoryResource($category));
     }
 
     public function destroy(CategoryService $categoryService, $id) {
-        try {
-            $categoryService->delete($id);
-        } catch (\Exception $e) {
-            abort($e->getCode(), $e->getMessage());
-        }
+        $categoryService->delete($id);
 
         return $this->responseDeleted();
     }

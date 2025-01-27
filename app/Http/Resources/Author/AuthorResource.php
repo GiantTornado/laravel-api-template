@@ -16,7 +16,7 @@ class AuthorResource extends JsonResource {
             'id' => $this->id,
             'name' => $this->name,
             // load callback returned [value] if pivot relationship data exist in modelObject
-            'isAutographed' => $this->whenPivotLoaded('author_book', function () {
+            'is_autographed' => $this->whenPivotLoaded('author_book', function () {
                 return $this->pivot->is_autographed;
             }),
         ];

@@ -9,6 +9,7 @@ use App\Repositories\Database\DatabaseUserRepository;
 use App\Repositories\Interfaces\CategoryRepositoryInterface;
 use App\Repositories\Interfaces\ProfileRepositoryInterface;
 use App\Repositories\Interfaces\UserRepositoryInterface;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
@@ -37,12 +38,15 @@ class AppServiceProvider extends ServiceProvider {
      */
     public function boot(): void {
         // Password default rules when calling [Password::defaults()] as in [StoreAuthRequest]
-        Password::defaults(fn () => Password::min(8)->letters()->mixedCase()->numbers());
+        Password::defaults(fn() => Password::min(8)->letters()->mixedCase()->numbers());
 
         EnsureFeaturesAreActive::whenInactive(
             function (Request $request, array $features) {
                 return response()->json(['message' => 'Feature is in-active.'], 403);
             }
         );
+
+        //throw an exception when attempting to fill an [unfillable] attribute 
+        Model::preventSilentlyDiscardingAttributes(!$this->app->isProduction());
     }
 }

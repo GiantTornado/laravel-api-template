@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 
+use App\Enums\RolesEnum;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -12,7 +13,7 @@ use Laravel\Sanctum\HasApiTokens;
 class User extends Authenticatable {
     use HasApiTokens, HasFactory, Notifiable;
 
-    protected $fillable = ['email', 'password', 'role_id'];
+    protected $fillable = ['email', 'password', 'email_verified_at', 'avatar', 'role_id'];
 
     protected $hidden = ['password', 'remember_token'];
 
@@ -31,6 +32,10 @@ class User extends Authenticatable {
     public function profile() {
         // return $this->hasOne(RelatedModel::class, 'foreign_key_in_related_model', 'primary_key_in_current_model');
         return $this->hasOne(Profile::class, 'user_id', 'id');
+    }
+
+    public function socialAccounts() {
+        return $this->hasMany(SocialAccount::class);
     }
 
     /**

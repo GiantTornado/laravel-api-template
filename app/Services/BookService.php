@@ -24,7 +24,7 @@ class BookService {
             'params' => $filters,
         ]);
 
-        $books = $filteredBooks->when($pageSize, fn ($query) => $query->paginate($pageSize), fn ($query) => $query->get());
+        $books = $filteredBooks->when($pageSize, fn($query) => $query->paginate($pageSize), fn($query) => $query->get());
 
         return $books;
     }
@@ -39,9 +39,7 @@ class BookService {
     }
 
     public function createFromRequest($request) {
-        if (Gate::denies('create', Book::class)) {
-            throw new \Exception('Not Authorized.', 403);
-        }
+        Gate::authorize('create', Book::class);
 
         $booksPublishedTodayCount = $this->getBooksPublishedTodayCount();
         if ($booksPublishedTodayCount > config('modules.book.max_books_allowed_to_publish_per_day')) {
@@ -49,15 +47,15 @@ class BookService {
         }
 
         $book = DB::transaction(function () use ($request, &$book) {
-            $book = Book::create([
-                'title' => $request->title,
-                'description' => $request->description,
-                'published_at' => $request->publishedAt,
-                'price' => $request->price,
-                'category_id' => $request->categoryId,
-            ]);
+            $book = Book::create($request->safe()->only([
+                'title',
+                'description',
+                'published_at',
+                'price',
+                'category_id',
+            ]));
 
-            $book->authors()->attach($request->authorIds);
+            $book->authors()->attach($request->author_ids);
 
             return $book;
         });
@@ -73,20 +71,18 @@ class BookService {
             throw new BookNotFoundException;
         }
 
-        if (Gate::inspect('update', [$book])->denied()) {
-            throw new \Exception('Not Authorized.', 403);
-        }
+        Gate::authorize('update', $book);
 
         DB::transaction(function () use ($request, $book) {
-            $book->update([
-                'title' => $request->title,
-                'description' => $request->description,
-                'published_at' => $request->publishedAt,
-                'price' => $request->price,
-                'category_id' => $request->categoryId,
-            ]);
+            $book->update($request->safe()->only([
+                'title',
+                'description',
+                'published_at',
+                'price',
+                'category_id',
+            ]));
 
-            $book->authors()->sync($request->authorIds);
+            $book->authors()->sync($request->author_ids);
         });
 
         return $book->refresh()->load(['category', 'authors']);
@@ -99,9 +95,7 @@ class BookService {
             throw new BookNotFoundException;
         }
 
-        if (Gate::inspect('delete', [$book])->denied()) {
-            throw new \Exception('Not Authorized.', 403);
-        }
+        Gate::authorize('delete', $book);
 
         DB::transaction(function () use ($book) {
             $book->authors()->detach();

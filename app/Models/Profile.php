@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 class Profile extends Model {
     use HasFactory;
 
-    protected $fillable = ['first_name', 'last_name', 'user_id'];
+    protected $fillable = ['first_name', 'last_name', 'avatar', 'user_id'];
 
     // call [callback] when [attributeName] is get or set by [modelObject]
     protected function fullName(): Attribute {

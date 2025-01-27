@@ -22,7 +22,7 @@ class MostExpensiveBookFeature {
      */
     public function resolve(User $user): mixed {
         return match (true) {
-            $user->role_id === RolesEnum::ADMIN->value => false,
+            $user->role_id === RolesEnum::Admin->value => false,
             app()->environment('staging') => true,
             default => Lottery::odds(1, 5),
         };

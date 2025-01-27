@@ -17,6 +17,7 @@ class ProfileFactory extends Factory {
         return [
             'first_name' => fake()->firstName(),
             'last_name' => fake()->lastName(),
+            'avatar' => fake()->imageUrl(200, 200, 'people', true, 'avatar'),
         ];
     }
 }

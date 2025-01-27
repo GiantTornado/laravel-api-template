@@ -23,11 +23,11 @@ class UpdateBookRequest extends FormRequest {
         return [
             'title' => ['required', 'string', 'max:255', Rule::unique('books', 'title')->ignore($this->id, 'id'), new NoDigitsRule],
             'description' => ['string', 'max:1000'],
-            'publishedAt' => ['date', 'before_or_equal:'.now()->toDateString()],
+            'publishe_at' => ['date', 'before_or_equal:'.now()->toDateString()],
             'price' => ['required', 'integer', 'min:0'],
-            'categoryId' => ['required', 'string', 'exists:categories,id'],
-            'authorIds' => ['array'],
-            'authorIds.*' => ['integer', 'exists:authors,id'],
+            'category_id' => ['required', 'string', 'exists:categories,id'],
+            'author_ids' => ['array'],
+            'author_ids.*' => ['integer', 'exists:authors,id'],
         ];
     }
 }

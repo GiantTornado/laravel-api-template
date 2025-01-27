@@ -11,7 +11,7 @@ class DatabaseCategoryRepository implements CategoryRepositoryInterface {
         return Category::all();
     }
 
-    public function findById(int $id, array $relations = []) {
+    public function findById(string $id, array $relations = []) {
         return Category::with($relations)->find($id);
     }
 
@@ -29,7 +29,7 @@ class DatabaseCategoryRepository implements CategoryRepositoryInterface {
         $category->delete();
     }
 
-    public function hasBooks(int $categoryId) {
+    public function hasBooks(string $categoryId) {
         return Book::where('category_id', $categoryId)->exists();
     }
 }

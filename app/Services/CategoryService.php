@@ -29,41 +29,35 @@ class CategoryService {
     }
 
     public function createFromRequest($request) {
-        if (Gate::denies('create', Category::class)) {
-            throw new \Exception('Not Authorized.', 403);
-        }
+        Gate::authorize('create', Category::class);
 
         return $this->categoryRepository->create([
             'name' => $request->name,
         ]);
     }
 
-    public function updateFromRequest($request, int $id) {
+    public function updateFromRequest($request, string $id) {
         $category = $this->categoryRepository->findById($id);
 
         if (!$category) {
             throw new CategoryNotFoundException;
         }
 
-        if (Gate::inspect('update', [$category])->denied()) {
-            throw new \Exception('Not Authorized.', 403);
-        }
-
+        Gate::authorize('update', $category);
+ 
         return $this->categoryRepository->update($category, [
             'name' => $request->name,
         ]);
     }
 
-    public function delete(int $id) {
+    public function delete(string $id) {
         $category = $this->categoryRepository->findById($id);
 
         if (!$category) {
             throw new CategoryNotFoundException;
         }
 
-        if (Gate::inspect('delete', [$category])->denied()) {
-            throw new \Exception('Not Authorized.', 403);
-        }
+        Gate::authorize('delete', $category);
 
         if ($this->categoryRepository->hasBooks($id)) {
             throw new \Exception('Category cannot be deleted because it has associated books.', 422);

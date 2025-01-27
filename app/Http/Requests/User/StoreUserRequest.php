@@ -21,13 +21,13 @@ class StoreUserRequest extends FormRequest {
      */
     public function rules(): array {
         return [
-            'firstName' => [
+            'first_name' => [
                 'required',
                 'string',
                 'max:50',
                 new ValidProfileNameRule,
             ],
-            'lastName' => [
+            'last_name' => [
                 'required',
                 'string',
                 'max:50',

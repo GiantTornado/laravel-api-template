@@ -25,21 +25,21 @@ class BookPolicy {
      * Determine whether the user can create models.
      */
     public function create(User $user): bool {
-        return $user->role_id === RolesEnum::ADMIN->value;
+        return $user->role_id === RolesEnum::Admin->value;
     }
 
     /**
      * Determine whether the user can update the model.
      */
     public function update(User $user, Book $book): bool {
-        return $user->role_id === RolesEnum::ADMIN->value;
+        return $user->role_id === RolesEnum::Admin->value;
     }
 
     /**
      * Determine whether the user can delete the model.
      */
     public function delete(User $user, Book $book): bool {
-        return $user->role_id === RolesEnum::ADMIN->value && $book->category->id > 1;
+        return $user->role_id === RolesEnum::Admin->value && $book->category->id > 1;
     }
 
     /**

@@ -19,12 +19,12 @@ class BookResource extends JsonResource {
             'title' => $this->title,
             'slug' => $this->slug,
             'description' => $this->whenHas('description'),
-            'publishedAt' => $this->whenHas('published_at'),
+            'published_at' => $this->whenHas('published_at'),
             'price' => $this->whenHas('price', fn () => number_format($this->price, 2)),
             'category' => new CategoryResource($this->whenLoaded('category')),
             'authors' => new AuthorCollection($this->whenLoaded('authors')),
-            'createdAt' => $this->created_at,
-            'updatedAt' => $this->updated_at,
+            'created_at' => $this->created_at,
+            'updated_at' => $this->updated_at,
         ];
     }
 }

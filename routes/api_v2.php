@@ -5,7 +5,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::controller(BookController::class)
     ->prefix('books')
-    ->name('books.')
+    ->name('v2.books.')
     ->middleware(['auth:sanctum'])
     ->group(function () {
         Route::get('/', 'index')->name('index');

@@ -2,10 +2,13 @@
 
 namespace Tests\Feature\Http\Controllers\Api\V1;
 
+use App\Exceptions\Book\BookNotFoundException;
 use App\Http\Resources\Book\BookCollection;
 use App\Models\Author;
 use App\Models\Book;
 use App\Models\Category;
+use App\Models\Profile;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Response;
 use Laravel\Sanctum\Sanctum;
@@ -15,15 +18,15 @@ class BookControllerTest extends TestCase {
     // execute each test within a database transaction and rollback after each test
     use RefreshDatabase;
 
-    private $alice;
+    private $admin;
 
     protected function setUp(): void {
         parent::setUp();
-        $this->alice = $this->createRandomUser();
+        $this->admin = $this->createRandomUser();
     }
 
     public function test_can_get_all_books(): void {
-        Sanctum::actingAs($this->alice);
+        Sanctum::actingAs($this->admin);
         Category::factory()->has(Book::factory()->count(3))->create();
         Category::factory()->has(Book::factory()->count(2))->create();
         Book::factory()->state(['title' => 'Test Book'])->for(Category::factory())->has(Author::factory())->create();
@@ -41,7 +44,7 @@ class BookControllerTest extends TestCase {
     }
 
     public function test_can_get_books_paginated() {
-        Sanctum::actingAs($this->alice);
+        Sanctum::actingAs($this->admin);
         Book::factory()->for(Category::factory())->has(Author::factory())->count(config('meta.pagination.page_size.books') + 1)->create();
 
         $response = $this->getJson(route('books.index'));
@@ -52,7 +55,7 @@ class BookControllerTest extends TestCase {
     }
 
     public function test_can_filter_books_by_title() {
-        Sanctum::actingAs($this->alice);
+        Sanctum::actingAs($this->admin);
         $aliceBook = $this->createRandomBook(['title' => 'Alice Book', 'description' => null]);
         $bobBook = $this->createRandomBook(['title' => 'Bob Book', 'description' => null]);
 
@@ -70,12 +73,13 @@ class BookControllerTest extends TestCase {
 
         $response->assertStatus(Response::HTTP_OK);
         $response->assertJsonCount(1, 'data');
+        // test whether the response contains given data anywhere.
         $response->assertJsonFragment(['id' => $aliceBook->id]);
         $response->assertJsonMissing(['id' => $bobBook->id]);
     }
 
     public function test_book_price_is_shown_correctly() {
-        Sanctum::actingAs($this->alice);
+        Sanctum::actingAs($this->admin);
         $book = $this->createRandomBook(['price' => 123.45]);
 
         $response = $this->getJson(route('books.show', [
@@ -87,7 +91,7 @@ class BookControllerTest extends TestCase {
     }
 
     public function test_can_books_be_sorted_by_price() {
-        Sanctum::actingAs($this->alice);
+        Sanctum::actingAs($this->admin);
         $cheap = $this->createRandomBook(['price' => 100]);
         $expensiveBook = $this->createRandomBook(['price' => 200]);
 
@@ -111,7 +115,7 @@ class BookControllerTest extends TestCase {
     }
 
     public function test_can_create_a_book() {
-        Sanctum::actingAs($this->alice);
+        Sanctum::actingAs($this->admin);
         $book_data = Book::factory()->make();
         $book_data['categoryId'] = Category::factory()->create()->id;
         $book_data['authorIds'] = Author::factory()->count(3)->create()->pluck('id')->toArray();
@@ -128,5 +132,43 @@ class BookControllerTest extends TestCase {
         foreach ($book_data->authorIds as $authorId) {
             $this->assertDatabaseHas('author_book', ['author_id' => $authorId]);
         }
+    }
+
+    public function test_viewer_user_can_not_create_book() {
+        $viewer = User::factory()->has(Profile::factory())->viewer()->create();
+        Sanctum::actingAs($viewer);
+        $book_data = Book::factory()->make()->toArray();
+
+        $response = $this->postJson(route('books.store', $book_data));
+
+        $response->assertStatus(Response::HTTP_FORBIDDEN);
+        $this->assertDatabaseMissing(Book::class, $book_data);
+    }
+
+    public function test_can_delete_a_book() {
+        Sanctum::actingAs($this->admin);
+        $book = Book::factory()->has(Author::factory()->count(3))->create();
+
+        $response = $this->deleteJson(route('books.destroy', ['id' => $book->id]));
+
+        $response->assertStatus(Response::HTTP_NO_CONTENT);
+
+        $this->assertSoftDeleted($book);
+        foreach ($book->authors as $author) {
+            $this->assertDatabaseMissing('author_book', [
+                'book_id' => $book->id,
+                'author_id' => $author->id,
+            ]);
+        }
+    }
+
+    public function test_exception_is_thrown_for_unavailable_book() {
+        Sanctum::actingAs($this->admin);
+
+        $this->withoutExceptionHandling();
+
+        $this->expectException(BookNotFoundException::class);
+
+        $this->getJson(route('books.show', ['id' => 1]));
     }
 }

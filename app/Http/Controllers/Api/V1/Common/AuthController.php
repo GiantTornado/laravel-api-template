@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Api\V1;
+namespace App\Http\Controllers\Api\V1\Common;
 
 use App\Actions\CreateAuthTokenAction;
 use App\Http\Controllers\Controller;
@@ -33,7 +33,7 @@ class AuthController extends Controller {
 
         return $this->responseCreated([
             'user' => new UserResource($user),
-            'accessToken' => $token,
+            'access_token' => $token,
         ]);
     }
 

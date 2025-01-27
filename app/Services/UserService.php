@@ -20,7 +20,7 @@ class UserService {
     }
 
     public function getUser($id) {
-        $user = User::find($id);
+        $user = $this->userRepository->findById($id, ['profile', 'role']);
         if (!$user) {
             throw new UserNotFoundException;
         }
@@ -41,7 +41,7 @@ class UserService {
             $user = $this->userRepository->create([
                 'email' => $request->email,
                 'password' => $request->password,
-                'role_id' => RolesEnum::VIEWER->value,
+                'role_id' => RolesEnum::Viewer->value,
             ]);
 
             $this->profileRepository->create([

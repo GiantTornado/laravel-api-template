@@ -27,6 +27,8 @@ class UserFactory extends Factory {
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('Password123'),
             'remember_token' => Str::random(10),
+
+            'role_id' => RolesEnum::Viewer->value,
         ];
     }
 
@@ -40,10 +42,10 @@ class UserFactory extends Factory {
     }
 
     public function admin() {
-        return $this->state(['role_id' => RolesEnum::ADMIN]);
+        return $this->state(['role_id' => RolesEnum::Admin]);
     }
 
     public function viewer() {
-        return $this->state(['role_id' => RolesEnum::VIEWER]);
+        return $this->state(['role_id' => RolesEnum::Viewer]);
     }
 }

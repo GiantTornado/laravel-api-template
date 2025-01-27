@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Api\V1;
+namespace App\Http\Controllers\Api\V1\Common;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Book\GetBookRequest;
@@ -14,49 +14,33 @@ class BookController extends Controller {
     public function index(GetBookRequest $getBookRequest, BookService $bookService) {
         $books = $bookService->getBooks(
             filters: $getBookRequest->all(),
-            pageSize: request()->pageSize ?? config('meta.pagination.page_size.books')
+            pageSize: request()->page_size ?? config('meta.pagination.page_size.books')
         );
 
         return new BookCollection($books);
     }
 
     public function show(BookService $bookService, $id) {
-        try {
-            $book = $bookService->getBook($id);
-        } catch (\Exception $e) {
-            abort($e->getCode(), $e->getMessage());
-        }
+        $book = $bookService->getBook($id);
 
         return new BookResource($book);
     }
 
     public function store(StoreBookRequest $storeBookRequest, BookService $bookService) {
-        try {
-            $book = $bookService->createFromRequest($storeBookRequest);
-            $bookService->sendBookCreatedNotification($book, auth()->user());
-        } catch (\Exception $e) {
-            abort($e->getCode(), $e->getMessage());
-        }
+        $book = $bookService->createFromRequest($storeBookRequest);
+        $bookService->sendBookCreatedNotification($book, auth()->user());
 
         return $this->responseCreated(new BookResource($book));
     }
 
     public function update(UpdateBookRequest $updateBookRequest, BookService $bookService, $id) {
-        try {
-            $book = $bookService->updateFromRequest($updateBookRequest, $id);
-        } catch (\Exception $e) {
-            abort($e->getCode(), $e->getMessage());
-        }
+        $book = $bookService->updateFromRequest($updateBookRequest, $id);
 
         return $this->responseOk(new BookResource($book));
     }
 
     public function destroy(BookService $bookService, $id) {
-        try {
-            $bookService->delete($id);
-        } catch (\Exception $e) {
-            abort($e->getCode(), $e->getMessage());
-        }
+        $bookService->delete($id);
 
         return $this->responseDeleted();
     }

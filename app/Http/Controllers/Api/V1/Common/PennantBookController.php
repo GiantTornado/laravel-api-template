@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Api\V1;
+namespace App\Http\Controllers\Api\V1\Common;
 
 use App\Exceptions\InactiveFeatureException;
 use App\Features\Book\CheapestBookFeature;

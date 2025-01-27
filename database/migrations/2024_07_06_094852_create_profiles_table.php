@@ -13,6 +13,7 @@ return new class extends Migration {
             $table->id();
             $table->string('first_name')->index();
             $table->string('last_name');
+            $table->string('avatar')->nullable();
 
             $table->foreignId('user_id')->constrained('users', 'id');
 

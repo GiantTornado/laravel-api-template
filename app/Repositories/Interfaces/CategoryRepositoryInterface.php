@@ -7,7 +7,7 @@ use App\Models\Category;
 interface CategoryRepositoryInterface {
     public function findAll();
 
-    public function findById(int $id, array $relations = []);
+    public function findById(string $id, array $relations = []);
 
     public function create(array $data);
 
@@ -15,5 +15,5 @@ interface CategoryRepositoryInterface {
 
     public function delete(Category $category);
 
-    public function hasBooks(int $categoryId);
+    public function hasBooks(string $categoryId);
 }

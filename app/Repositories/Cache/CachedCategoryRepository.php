@@ -20,7 +20,7 @@ class CachedCategoryRepository implements CategoryRepositoryInterface {
         return CacheHelper::cacheWithFallback('categories.all', 3600, fn () => $this->repository->findAll());
     }
 
-    public function findById(int $id, array $relations = []) {
+    public function findById(string $id, array $relations = []) {
         return CacheHelper::cacheWithFallback("category#$id", 3600, fn () => $this->repository->findById($id));
     }
 
@@ -45,7 +45,7 @@ class CachedCategoryRepository implements CategoryRepositoryInterface {
         Cache::forget('categories.all');
     }
 
-    public function hasBooks(int $categoryId) {
+    public function hasBooks(string $categoryId) {
         return $this->repository->hasBooks($categoryId);
     }
 }
