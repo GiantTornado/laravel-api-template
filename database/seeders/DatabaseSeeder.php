@@ -22,7 +22,7 @@ class DatabaseSeeder extends Seeder {
             UserSeeder::class,
         ]);
 
-        if (app()->environment(['local', 'staging'])) {
+        if (app()->environment(['local', 'staging', 'production'])) {
             // HasOne Relationship
             User::factory()->viewer()->has(Profile::factory())->count(1)->create();
 
