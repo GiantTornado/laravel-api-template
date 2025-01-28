@@ -8,8 +8,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class BookCreatedNotification extends Notification implements ShouldQueue {
-    use Queueable;
+class BookCreatedNotification extends Notification {
 
     /**
      * Create a new notification instance.
